@@ -25,7 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createAccountStatement = "CREATE TABLE account_table(accountNo TEXT PRIMARY KEY, bankName TEXT, accountHolderName TEXT, balance REAL)";
-        String createTransactionStatement = "CREATE TABLE transaction_table(accountNo TEXT, expenseType INT, amount REAL, date TEXT)";
+        String createTransactionStatement = "CREATE TABLE transaction_table(id INTEGER PRIMARY KEY AUTOINCREMENT, accountNo TEXT, expenseType INT, amount REAL, date TEXT)";
         String createExpenseTypeStatement = "CREATE TABLE expenseType_table(id INT PRIMARY KEY, type TEXT)";
 
         sqLiteDatabase.execSQL(createAccountStatement);
@@ -173,7 +173,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // transactions list is made in the descending order to get the latest 10(limit) transactions to log
         String query = "SELECT accountNo, type, amount, date FROM transaction_table LEFT OUTER JOIN " +
-                "expenseType_table on transaction_table.expenseType=expenseType_table.id";
+                "expenseType_table on transaction_table.expenseType=expenseType_table.id ORDER BY " +
+                "transaction_table.id DESC";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
