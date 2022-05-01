@@ -25,8 +25,8 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createAccountStatement = "CREATE TABLE account_table(accountNo TEXT PRIMARY KEY, bankName TEXT, accountHolderName TEXT, balance REAL)";
-        String createTransactionStatement = "CREATE TABLE transaction_table(id INTEGER PRIMARY KEY AUTOINCREMENT, accountNo TEXT, expenseType INT, amount REAL, date TEXT)";
-        String createExpenseTypeStatement = "CREATE TABLE expenseType_table(id INT PRIMARY KEY, type TEXT)";
+        String createTransactionStatement = "CREATE TABLE transaction_table(id INTEGER PRIMARY KEY AUTOINCREMENT, accountNo TEXT, expenseType INTEGER, amount REAL, date TEXT)";
+        String createExpenseTypeStatement = "CREATE TABLE expenseType_table(id INTEGER PRIMARY KEY, type TEXT)";
 
         sqLiteDatabase.execSQL(createAccountStatement);
         sqLiteDatabase.execSQL(createTransactionStatement);
