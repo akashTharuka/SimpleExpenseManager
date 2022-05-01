@@ -144,7 +144,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
         switch (expenseType){
             case EXPENSE:
-                balance -= amount;
+                if (amount <= balance){
+                    balance -= amount;
+                }
+                else{
+                    throw new InvalidAccountException("Balance is insufficient for the transaction");
+                }
                 break;
             case INCOME:
                 balance += amount;
