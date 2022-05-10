@@ -16,14 +16,64 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.List;
+
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.PersistentExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.exception.ExpenseManagerException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.DBHelper;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
-        super(Application.class);
+public class ApplicationTest{
+    private static ExpenseManager expenseManager;
+    private static DBHelper dbHelper;
+
+    @BeforeClass
+    public static void initial_setup(){
+        Context context = ApplicationProvider.getApplicationContext();
+        dbHelper = new DBHelper(context);
+        try {
+            expenseManager = new PersistentExpenseManager(context);
+        } catch (ExpenseManagerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void add_account_test(){
+        expenseManager.addAccount("00000A", "TEST_BANK", "test", 10000.0);
+        List<String> accountNumbers = expenseManager.getAccountNumbersList();
+        assertTrue(accountNumbers.contains("00000A"));
+    }
+
+    @Test
+    public void transaction_test(){
+        try {
+            Double old_balance = dbHelper.getAccount("12345A").getBalance();
+
+            expenseManager.updateAccountBalance("12345A", 22, 3, 2022, ExpenseType.INCOME, "1000.0");
+            Double new_balance_income = dbHelper.getAccount("12345A").getBalance();
+            assertTrue(new_balance_income == old_balance + 1000.0);
+
+            expenseManager.updateAccountBalance("12345A", 22, 3, 2022, ExpenseType.EXPENSE, "500.0");
+            Double new_balance_expense = dbHelper.getAccount("12345A").getBalance();
+            assertTrue(new_balance_expense == new_balance_income - 500.0);
+
+        } catch (InvalidAccountException e) {
+            e.printStackTrace();
+        }
     }
 }
